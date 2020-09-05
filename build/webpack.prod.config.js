@@ -1,6 +1,6 @@
 /**生产环境配置档 */
 const {merge} = require('webpack-merge');
-const baseWebpackConfig = require('./webpack.base.conf');
+const baseWebpackConfig = require('./webpack.base.config');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = merge(baseWebpackConfig, {

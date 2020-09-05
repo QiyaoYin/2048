@@ -6,12 +6,14 @@ module.exports = merge(baseWebpackConfig,{
     devtool: 'cheap-module-eval-source-map',
     devServer: {
         port: 9000,
+        host: '0.0.0.0',
         open: true, 
         clientLogLevel: 'warn',
         compress: true, 
         overlay: true, 
         stats: 'errors-only',
         hot: true,
+        disableHostCheck: true
     },
     module: {
         rules: [

@@ -1,10 +1,10 @@
 <template>
     <div id="main-wrapper">
-        <score :scores='scores' @reGameEvt="initPanMap"/>
+        <score :scores='scores' @reGameEvt="initPanMap" :xNum='xNum' :yNum='yNum' :isFull='isFull'/>
 
-        <div id="game-wrapper">
+        <div id="game-wrapper" :class="[isMobile ? 'mobile' : '']">
             <template v-for="(pan,index) in panMap">
-                <pan v-for="(p,index2) in pan" :key="`${index},${index2}`" :class="`pan-${index}${index2}`" :num="p"/>
+                <pan v-for="(p,index2) in pan" :key="`${index},${index2}`" :x="index" :y="index2" :num="p" :panWidth='panWidth' :panHeight='panHeight'/>
             </template>
         </div>
     </div>
@@ -19,53 +19,111 @@ export default {
     data(){
         return {
             scores: 0,
-            panMap:[[]]
+            panMap:[[]],
+            xNum: 4,
+            yNum: 4,
+            panWidth: 0,
+            panHeight: 0,
+            isFull: false,
         }
     },
     mounted(){
         this.initPanMap();
         this.initkeyUp();
     },
+    computed:{
+        isMobile(){
+            return navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
+        }
+    },
     methods:{
-        initPanMap(){ //初始化 数组
-            for(let i = 0;i < 4;i++){
-                this.$set(this.panMap,i,new Array());
-                for(let j = 0;j < 4;j++){
-                    this.panMap[i][j] = 0;
+        initGameWrapper(){
+            return new Promise((resolve,reject)=>{
+                let _gameWrapper = document.querySelector('#game-wrapper');
+                let _panWrapper = document.querySelectorAll('.pan-wrapper');
+
+                _gameWrapper.style.width = this.yNum * 100 + 'px';
+                _gameWrapper.style.height = this.xNum * 100 + 'px';
+
+                let _gameWrapperWidth = _gameWrapper.clientWidth;
+                let _gameWrapperHeight = _gameWrapper.clientHeight;
+                this.panWidth = (_gameWrapperWidth / this.yNum) * ((this.yNum - 0.5) / this.yNum);
+                this.panHeight = (_gameWrapperHeight / this.xNum) * ((this.xNum - 0.5) / this.xNum);
+                resolve();
+            });
+        },
+        initPanMap(x,y){ //初始化 数组
+            this.scores = 0;
+            this.panMap.length = 0;
+            this.isFull = false;
+            if(x && y){this.xNum = x;this.yNum = y;}
+            this.initGameWrapper().then(()=>{
+                for(let i = 0;i < this.xNum;i++){
+                    this.$set(this.panMap,i,new Array());
+                    for(let j = 0;j < this.yNum;j++){
+                        this.panMap[i][j] = 0;
+                    }
                 }
-            }
-            for(let i = 0;i < 2;i++){
-                this.addNum();
-            }
+                for(let i = 0;i < 2;i++){
+                    this.addNum();
+                }
+            });
         },
         initkeyUp(){
             let _this = this;
-            document.onkeyup = function(e){
-                let _code = e.keyCode;
-                switch(_code){
-                    case 38: //up
-                        _this.addUp();
-                        break ;
-                    case 39: //right
+            if(this.isMobile){
+                let startX, startY, moveEndX, moveEndY, X, Y; 
+                document.addEventListener('touchstart',e=>{
+                    e.preventDefault();
+                    startX = e.touches[0].pageX;
+                    startY = e.touches[0].pageY;
+                },false);
+
+                document.addEventListener('touchend',e=>{
+                    e.preventDefault();
+                    moveEndX = e.changedTouches[0].pageX;
+                    moveEndY = e.changedTouches[0].pageY;
+                    X = moveEndX - startX;
+                    Y = moveEndY - startY;
+                    if( Math.abs(X) > Math.abs(Y) && X > 50) {// right 
                         _this.addRight();
-                        break ;
-                    case 40: //down
-                        _this.addDown();
-                        break ;
-                    case 37: //left
+                    }else if( Math.abs(X) > Math.abs(Y) && X < -50) {// left
                         _this.addLeft();
-                        break ;
-                }
+                    }else if( Math.abs(Y) > Math.abs(X) && Y > 50) {// down
+                        _this.addDown();
+                    }else if( Math.abs(Y) > Math.abs(X) && Y < -50) {// up
+                        _this.addUp();
+                    }else{//没有发生滑动
+                    }
+                },false);
+            }else{
+                document.addEventListener('keyup',e=>{
+                    let _code = e.keyCode;
+                    switch(_code){
+                        case 38: //up
+                            _this.addUp();
+                            break ;
+                        case 39: //right
+                            _this.addRight();
+                            break ;
+                        case 40: //down
+                            _this.addDown();
+                            break ;
+                        case 37: //left
+                            _this.addLeft();
+                            break ;
+                    }
+                });
             }
         },
         addUp(){
             let step,flag = false;
-            for(let i = 0;i < 4;i++){                
+            for(let i = 0;i < this.yNum;i++){                
                 step = 1;
-                for(let j = 0;j < 3;){
+                for(let j = 0;j < this.xNum - 1;){
                     while(this.panMap[j + step] && this.panMap[j + step][i] === 0){step++;}
                     if(this.panMap[j + step] && this.panMap[j][i] === this.panMap[j + step][i]){
-                        this.scores += Number(this.panMap[j][i]) * 2;
+                        this.scores += this.panMap[j][i] * 2;
                         flag = true;
                         this.$set(this.panMap[j],i,this.panMap[j][i] + this.panMap[j + step][i]);
                         this.panMap[j + step][i] = 0;
@@ -78,9 +136,9 @@ export default {
         },
         clearUp(flag){
             let step;
-            for(let i = 0;i < 4;i++){         
+            for(let i = 0;i < this.yNum;i++){         
                 step = 1;
-                for(let j = 0;j < 3;j++){
+                for(let j = 0;j < this.xNum - 1;j++){
                     if(this.panMap[j][i]){continue ;}
                     while(this.panMap[j + step] && this.panMap[j + step][i] === 0){step++;}
                     if(this.panMap[j + step]){
@@ -96,12 +154,12 @@ export default {
         },
         addDown(){
             let step,flag = false;
-            for(let i = 3;i >= 0;i--){                
+            for(let i = this.yNum - 1;i >= 0;i--){                
                 step = 1;
-                for(let j = 3;j > 0;){
+                for(let j = this.xNum - 1;j > 0;){
                     while(this.panMap[j - step] && this.panMap[j - step][i] === 0){step++;}
                     if(this.panMap[j - step] && this.panMap[j][i] === this.panMap[j - step][i]){
-                        this.scores += Number(this.panMap[j][i]) * 2;
+                        this.scores += this.panMap[j][i] * 2;
                         flag = true;
                         this.$set(this.panMap[j],i,this.panMap[j][i] + this.panMap[j - step][i]);
                         this.panMap[j - step][i] = 0;
@@ -114,9 +172,9 @@ export default {
         },
         clearDown(flag){
             let step;
-            for(let i = 3;i >= 0;i--){         
+            for(let i = this.yNum - 1;i >= 0;i--){         
                 step = 1;
-                for(let j = 3;j > 0;j--){
+                for(let j = this.xNum - 1;j > 0;j--){
                     if(this.panMap[j][i]){continue ;}
                     while(this.panMap[j - step] && this.panMap[j - step][i] === 0){step++;}
                     if(this.panMap[j - step]){
@@ -132,12 +190,12 @@ export default {
         },
         addLeft(){
             let step,flag = false;
-            for(let i = 0;i < 4;i++){                
+            for(let i = 0;i < this.xNum;i++){                
                 step = 1;
-                for(let j = 0;j < 3;){
+                for(let j = 0;j < this.yNum - 1;){
                     while(this.panMap[i][j + step] === 0){step++;}
                     if(this.panMap[i][j] === this.panMap[i][j + step]){
-                        this.scores += Number(this.panMap[i][j]) * 2;
+                        this.scores += this.panMap[i][j] * 2;
                         flag = true;
                         this.$set(this.panMap[i],j,this.panMap[i][j] + this.panMap[i][j + step]);
                         this.panMap[i][j + step] = 0;
@@ -150,9 +208,9 @@ export default {
         },
         clearLeft(flag){
             let step;
-            for(let i = 0;i < 4;i++){         
+            for(let i = 0;i < this.xNum;i++){         
                 step = 1;
-                for(let j = 0;j < 3;j++){
+                for(let j = 0;j < this.yNum - 1;j++){
                     if(this.panMap[i][j]){continue ;}
                     while(this.panMap[i][j + step] === 0){step++;}
                     if(this.panMap[i][j + step]){
@@ -168,12 +226,12 @@ export default {
         },
         addRight(){
             let step,flag = false;
-            for(let i = 0;i < 4;i++){                
+            for(let i = 0;i < this.xNum;i++){                
                 step = 1;
-                for(let j = 3;j > 0;){
+                for(let j = this.yNum - 1;j > 0;){
                     while(this.panMap[i][j - step] === 0){step++;}
                     if(this.panMap[i][j] === this.panMap[i][j - step]){
-                        this.scores += Number(this.panMap[i][j]) * 2;
+                        this.scores += this.panMap[i][j] * 2;
                         flag = true;
                         this.$set(this.panMap[i],j,this.panMap[i][j] + this.panMap[i][j - step]);
                         this.panMap[i][j - step] = 0;
@@ -186,9 +244,9 @@ export default {
         },
         clearRight(flag){
             let step;
-            for(let i = 0;i < 4;i++){         
+            for(let i = 0;i < this.xNum;i++){         
                 step = 1;
-                for(let j = 3;j > 0;j--){
+                for(let j = this.yNum - 1;j > 0;j--){
                     if(this.panMap[i][j]){continue ;}
                     while(this.panMap[i][j - step] === 0){step++;}
                     if(this.panMap[i][j - step]){
@@ -203,12 +261,12 @@ export default {
             }
         },
         addNum(){
-            let x = Math.floor(Math.random() * 4);
-            let y = Math.floor(Math.random() * 4);
+            let x = Math.floor(Math.random() * this.xNum);
+            let y = Math.floor(Math.random() * this.yNum);
             if(this.panMap[x][y] === 0){
                 this.$set(this.panMap[x],y,Math.random() > 0.7 ? 4 : 2);
                 if(!this.hasEmpty()){
-                    alert('结束');
+                    this.isFull = true;
                 }
             }else{
                 this.addNum();
@@ -240,11 +298,19 @@ export default {
         text-align center
         
         #game-wrapper{
-            display inline-block
-            background-color $border-color
-            width 450px
-            height 450px
-            border-radius 5px
+            display: inline-flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            background-color: #b9ada1;
+            max-width: 450px;
+            max-height 450px;
+            border-radius: 5px;
+        }
+
+        #game-wrapper.mobile{
+            max-width: 100vmin;
+            max-height 100vmin;
         }
     }
 </style>

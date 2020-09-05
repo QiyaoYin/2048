@@ -1,5 +1,5 @@
 <template>
-    <div :class="['pan-wrapper','num-' + num]">
+    <div :class="['pan-wrapper',`num-${num}`,`pan-${x}${y}`]">
         {{num === 0 ? "" : num}}
     </div>
 </template>
@@ -11,10 +11,33 @@ export default {
         num: {
             type: Number,
             required: true
+        },
+        panWidth: {
+            type: Number,
+            required: true
+        },
+        panHeight: {
+            type: Number,
+            required: true
+        },
+        x: {
+            type: Number,
+            required: true
+        },
+        y: {
+            type: Number,
+            required: true
         }
     },
     mounted(){
-        
+        this.initPanWrapper();
+    },
+    methods:{
+        initPanWrapper(){
+            let _panWrapper = document.querySelector(`.pan-${this.x}${this.y}`);
+            _panWrapper.style.width = this.panWidth + 'px';
+            _panWrapper.style.height = this.panHeight + 'px';
+        }
     }
 }
 </script>
@@ -25,13 +48,13 @@ export default {
         display flex
         align-items center
         justify-content center
-        width 100px
-        height 100px
-        margin 10px 0 0 10px
+        //width 100px
+        //height 100px
+        //margin 10px 0 0 10px
         border-radius 3px
         background-color $-other-background-color
         color $-other-font-color
-        font-size 30px
+        font-size 20px
         float left
     }
 
