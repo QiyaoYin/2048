@@ -77,7 +77,7 @@ export default {
                     e.preventDefault();
                     startX = e.touches[0].pageX;
                     startY = e.touches[0].pageY;
-                },false);
+                },{passive: false,capture: false});
 
                 document.addEventListener('touchend',e=>{
                     e.preventDefault();
@@ -95,7 +95,7 @@ export default {
                         _this.addUp();
                     }else{//没有发生滑动
                     }
-                },false);
+                },{passive: false,capture: false});
             }else{
                 document.addEventListener('keyup',e=>{
                     let _code = e.keyCode;

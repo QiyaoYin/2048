@@ -5,13 +5,13 @@
                 2048
             </h1>
             <div id="score-2048" :class="[isFull ? 'full' : '']">
-                <h3 id="score-2048-title">得分</h3>
+                <h3 id="score-2048-title">Score</h3>
                 <p id="score-2048-content">{{scores}}</p>
             </div>
             <div id="re-2048-game-2048-wrapper">
-                <div><label>纵向个数:</label><input class="x-num num" type="number" :value="yNum"></div>
-                <div><label>横向个数:</label><input class="y-num num" type="number" :value="xNum"></div>
-                <button id="re-2048-game" @click="reGameEvt">重新开始</button>
+                <div><label>column numbers:</label><input class="x-num num" type="number" :value="yNum"></div>
+                <div><label>row numbers:</label><input class="y-num num" type="number" :value="xNum"></div>
+                <button id="re-2048-game" @click="reGameEvt">reStart</button>
             </div>
         </div>
     </div>
@@ -40,11 +40,11 @@ export default {
     },
     methods:{
         reGameEvt(){
-            let _confirm = confirm('确定重新开始游戏？');
+            let _confirm = confirm('are you sure restarting game?');
             if(_confirm){
                 let _x = Number(document.querySelector('.y-num').value);
                 let _y = Number(document.querySelector('.x-num').value);
-                if(_x > 10 || _y > 10){alert('不能大于10！');return ;}
+                if(_x > 10 || _y > 10){alert('maximum number is 10！');return ;}
                 this.$emit('reGameEvt',_x,_y);
             }
         }
