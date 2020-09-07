@@ -12,3 +12,9 @@ import yqy2048 from 'yqy2048'
 ## API
 
 null
+
+## How to play
+
+PC: use the `up down left right` key to move the box.
+
+Mobile: use the finger to move the box.
