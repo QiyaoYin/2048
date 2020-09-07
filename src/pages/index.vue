@@ -1,8 +1,8 @@
 <template>
-    <div id="main-wrapper">
+    <div id="main-2048-wrapper">
         <score :scores='scores' @reGameEvt="initPanMap" :xNum='xNum' :yNum='yNum' :isFull='isFull'/>
 
-        <div id="game-wrapper" :class="[isMobile ? 'mobile' : '']">
+        <div id="game-2048-wrapper" :class="[isMobile ? 'mobile' : '']">
             <template v-for="(pan,index) in panMap">
                 <pan v-for="(p,index2) in pan" :key="`${index},${index2}`" :x="index" :y="index2" :num="p" :panWidth='panWidth' :panHeight='panHeight'/>
             </template>
@@ -11,11 +11,11 @@
 </template>
 
 <script>
-import score from '@/components/Score';
-import pan from '@/components/Pan';
+import score from '../components/Score';
+import pan from '../components/Pan';
 
 export default {
-    name: 'index',
+    name: 'yqy2048',
     data(){
         return {
             scores: 0,
@@ -39,7 +39,7 @@ export default {
     methods:{
         initGameWrapper(){
             return new Promise((resolve,reject)=>{
-                let _gameWrapper = document.querySelector('#game-wrapper');
+                let _gameWrapper = document.querySelector('#game-2048-wrapper');
                 let _panWrapper = document.querySelectorAll('.pan-wrapper');
 
                 _gameWrapper.style.width = this.yNum * 100 + 'px';
@@ -293,11 +293,11 @@ export default {
 <style lang="stylus" scoped>
     @import '../assets/css/global.styl';
     
-    #main-wrapper{
+    #main-2048-wrapper{
         width 100%
         text-align center
         
-        #game-wrapper{
+        #game-2048-wrapper{
             display: inline-flex;
             justify-content: space-around;
             align-items: center;
@@ -308,7 +308,7 @@ export default {
             border-radius: 5px;
         }
 
-        #game-wrapper.mobile{
+        #game-2048-wrapper.mobile{
             max-width: 100vmin;
             max-height 100vmin;
         }

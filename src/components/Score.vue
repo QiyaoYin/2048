@@ -1,17 +1,17 @@
 <template>
-    <div id="score-wrapper">
-        <div class="inner-wrapper">
-            <h1 id="header-wrapper">
+    <div id="score-2048-wrapper">
+        <div class="inner-2048-wrapper">
+            <h1 id="header-2048-wrapper">
                 2048
             </h1>
-            <div id="score" :class="[isFull ? 'full' : '']">
-                <h3 id="score-title">得分</h3>
-                <p id="score-content">{{scores}}</p>
+            <div id="score-2048" :class="[isFull ? 'full' : '']">
+                <h3 id="score-2048-title">得分</h3>
+                <p id="score-2048-content">{{scores}}</p>
             </div>
-            <div id="re-game-wrapper">
+            <div id="re-2048-game-2048-wrapper">
                 <div><label>纵向个数:</label><input class="x-num num" type="number" :value="yNum"></div>
                 <div><label>横向个数:</label><input class="y-num num" type="number" :value="xNum"></div>
-                <button id="re-game" @click="reGameEvt">重新开始</button>
+                <button id="re-2048-game" @click="reGameEvt">重新开始</button>
             </div>
         </div>
     </div>
@@ -54,17 +54,17 @@ export default {
 
 <style lang="stylus" scoped>
     @import '../assets/css/global.styl';
-    #score-wrapper{
+    #score-2048-wrapper{
         width 100%
         padding 20px 0
         overflow hidden
         text-align center
 
-        .inner-wrapper{
+        .inner-2048-wrapper{
             display inline-block
         }
 
-        #header-wrapper{
+        #header-2048-wrapper{
             font-size 50px
             color $header-color
             display inline-block
@@ -73,7 +73,7 @@ export default {
             vertical-align middle
         }
 
-        #score{
+        #score-2048{
             display inline-block
             background-color $border-color
             color #ffffff
@@ -82,11 +82,11 @@ export default {
             margin 0 20px
             vertical-align middle
 
-            #score-title{
+            #score-2048-title{
                 margin 0
             }
 
-            #score-content{
+            #score-2048-content{
                 width 100%
                 margin 0
                 padding 5px 0
@@ -94,12 +94,12 @@ export default {
             }
         }
 
-        #score.full{
+        #score-2048.full{
             color $-other-background-color
         }
 
 
-        #re-game-wrapper{
+        #re-2048-game-2048-wrapper{
             display inline-block
             vertical-align middle
             
@@ -115,7 +115,7 @@ export default {
                 margin 10px 0 
             }
             
-            #re-game{
+            #re-2048-game{
                 background-color $header-color
                 color #ffffff
                 padding 5px 30px 
@@ -135,16 +135,16 @@ export default {
                 padding 5px
             }
 
-            #header-wrapper{
+            #header-2048-wrapper{
                 font-size 20px
                 padding 10px 0
             }
 
-            #score{
+            #score-2048{
                 padding 5px 30px
             }
 
-            #re-game-wrapper{
+            #re-2048-game-2048-wrapper{
                 .num{
                     width 50px
                 }

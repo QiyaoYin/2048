@@ -9,7 +9,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname,'../dist'),
         filename: 'static/js/[name].js',
-        publicPath: '/'
+        publicPath: './'
     },
     resolve: {
         extensions: ['.vue','.js','.json'],
