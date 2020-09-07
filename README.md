@@ -18,3 +18,13 @@ null
 PC: use the `up down left right` key to move the box.
 
 Mobile: use the finger to move the box.
+
+## Feature
+
+> mobile
+
+<img src="https://raw.githubusercontent.com/YinQY/2048/master/src/assets/images/2048-mobile.jpg" style="zoom:50%;" >
+
+> pc
+
+<img src="https://raw.githubusercontent.com/YinQY/2048/master/src/assets/images/2048-pc.png" style="zoom:50%;" >
